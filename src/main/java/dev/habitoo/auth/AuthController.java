@@ -14,10 +14,14 @@ public class AuthController {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthService authService;
 
-    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthController(UserRepository userRepository,
+                          PasswordEncoder passwordEncoder,
+                          AuthService authService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.authService = authService;
     }
 
     @PostMapping("/register")
@@ -39,6 +43,17 @@ public class AuthController {
                 user.getCreatedAt()
         );
         return ResponseEntity.status(HttpStatus.CREATED).body(resp);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest body) {
+        try {
+            String token = authService.login(body.getEmail(), body.getPassword());
+            return ResponseEntity.ok(new LoginResponse(token));
+        } catch (AuthService.AuthException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new SimpleError(ex.getMessage()));
+        }
     }
 
     static class SimpleError {
