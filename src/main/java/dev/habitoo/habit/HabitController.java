@@ -39,4 +39,15 @@ public class HabitController {
                 .map(h -> ResponseEntity.ok(new HabitResponse(h.getId(), h.getName(), h.getCreatedAt())))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<HabitResponse> update(@PathVariable Long id, @Valid @RequestBody HabitRequest body) {
+        return habitRepository.findById(id)
+                .map(h -> {
+                    h.setName(body.getName());
+                    Habit saved = habitRepository.save(h);
+                    return ResponseEntity.ok(new HabitResponse(saved.getId(), saved.getName(), saved.getCreatedAt()));
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 }
