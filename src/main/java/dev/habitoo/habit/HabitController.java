@@ -50,4 +50,14 @@ public class HabitController {
                 })
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        return habitRepository.findById(id)
+                .map(h -> {
+                    habitRepository.delete(h);
+                    return ResponseEntity.noContent().<Void>build();
+                })
+                .orElseGet(() -> ResponseEntity.notFound().<Void>build());
+    }
 }
