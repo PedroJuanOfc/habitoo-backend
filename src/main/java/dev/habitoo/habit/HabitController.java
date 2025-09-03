@@ -32,4 +32,11 @@ public class HabitController {
         HabitResponse resp = new HabitResponse(h.getId(), h.getName(), h.getCreatedAt());
         return ResponseEntity.created(URI.create("/habits/" + h.getId())).body(resp);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<HabitResponse> getById(@PathVariable Long id) {
+        return habitRepository.findById(id)
+                .map(h -> ResponseEntity.ok(new HabitResponse(h.getId(), h.getName(), h.getCreatedAt())))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 }
